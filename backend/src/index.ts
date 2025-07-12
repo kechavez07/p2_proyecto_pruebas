@@ -2,8 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
+import path from 'path';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth';
+import pinRoutes from './routes/pin';
 import { errorHandler } from './middleware/errorHandler';
 import { connectDB } from './config/database'; // <-- Importa la conexión
 
@@ -29,12 +31,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
+app.use('/api/pins', pinRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ message: 'Servidor funcionando correctamente', timestamp: new Date().toISOString() });
 });
 
 app.use(errorHandler);
+// Servir archivos estáticos de la carpeta uploads
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 app.use('*', (req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
