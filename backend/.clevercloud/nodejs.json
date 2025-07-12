@@ -1,0 +1,13 @@
+{
+  "type": "node",
+  "build": {
+    "type": "npm",
+    "goal": "build"
+  },
+  "run": {
+    "goal": "start"
+  },
+  "env": {
+    "NODE_ENV": "production"
+  }
+}
