@@ -11,10 +11,10 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
-            <img src="public\favicon.ico" alt="Logo" className="h-6 w-6" />
+            <span className="text-white font-bold text-lg">P</span>
           </div>
           <span className="font-bold text-xl bg-gradient-primary bg-clip-text text-transparent">
-            Grupo 3
+            PinBoard
           </span>
         </Link>
 
