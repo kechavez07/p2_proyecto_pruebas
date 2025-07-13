@@ -6,6 +6,7 @@ import path from 'path';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './routes/auth';
 import pinRoutes from './routes/pin';
+import 'dotenv/config';
 import { errorHandler } from './middleware/errorHandler';
 import { connectDB } from './config/database'; // <-- Importa la conexión
 

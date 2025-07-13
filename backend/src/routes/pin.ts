@@ -1,21 +1,27 @@
 import { Router } from 'express';
 import multer from 'multer';
-import path from 'path';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import cloudinary from '../config/cloudinary';
 import { createPin, getPins } from '../controllers/pinController';
 
 const router = Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '../../public/uploads'));
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: (req, file) => {
+    let folder = 'pins/others';
+    if (file.fieldname === 'image') folder = 'pins/images';
+    if (file.fieldname === 'avatar') folder = 'pins/avatars';
+    return {
+      folder,
+      resource_type: 'image',
+      public_id: Date.now() + '-' + file.originalname
+    };
   }
 });
 
-// Ruta para crear un Pin, ahora con la URL correcta
-router.post('/createPin', async (req, res) => {
+// Ruta para crear un Pin, ahora con Cloudinary y solo acepta 'image' y 'avatar'
+router.post('/createPin', (req, res) => {
   const upload = multer({ storage }).fields([
     { name: 'image', maxCount: 1 },
     { name: 'avatar', maxCount: 1 }

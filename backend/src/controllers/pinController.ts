@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Pin from '../models/Pin';
+import cloudinary from '../config/cloudinary';
 
 export const createPin = async (req: Request, res: Response) => {
   try {
@@ -12,9 +13,19 @@ export const createPin = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Imagen y avatar requeridos' });
     }
 
-    // Construir URLs públicas
-    const imageUrl = `/uploads/${imageFile.filename}`;
-    const authorAvatar = `/uploads/${avatarFile.filename}`;
+    // Subir imagen principal a Cloudinary
+    const imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+      folder: 'pins/images',
+      resource_type: 'image'
+    });
+    // Subir avatar a Cloudinary
+    const avatarUpload = await cloudinary.uploader.upload(avatarFile.path, {
+      folder: 'pins/avatars',
+      resource_type: 'image'
+    });
+
+    const imageUrl = imageUpload.secure_url;
+    const authorAvatar = avatarUpload.secure_url;
 
     const pin = await Pin.create({
       title,
