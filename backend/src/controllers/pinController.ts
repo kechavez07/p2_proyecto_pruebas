@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import Pin from '../models/Pin';
-import path from 'path';
-import { Multer } from 'multer';
 
 export const createPin = async (req: Request, res: Response) => {
   try {
     const { title, description, authorName } = req.body;
-    // Multer guarda los archivos en req.files
     const files = req.files as { [fieldname: string]: Express.Multer.File[] };
     const imageFile = files?.image?.[0];
     const avatarFile = files?.avatar?.[0];
@@ -26,6 +23,7 @@ export const createPin = async (req: Request, res: Response) => {
       authorName,
       authorAvatar
     });
+    console.log('Pin creado:', pin);
     return res.status(201).json(pin);
   } catch (error) {
     return res.status(500).json({ message: 'Error al crear el pin', error });
