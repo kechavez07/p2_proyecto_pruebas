@@ -1,17 +1,20 @@
+
+import bcrypt from 'bcrypt';
+import jwt, { Secret } from 'jsonwebtoken';
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import { User } from '../models/User';
 import { AuthResponse, RegisterRequest, LoginRequest } from '../types/auth';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const JWT_SECRET: Secret = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_EXPIRES_IN: string = typeof process.env.JWT_EXPIRES_IN === 'string' && process.env.JWT_EXPIRES_IN.length > 0 ? process.env.JWT_EXPIRES_IN : '7d';
+
 
 // Función auxiliar para generar token JWT
 const generateToken = (userId: number, username: string, email: string): string => {
   const payload = { id: userId, username, email };
-  return jwt.sign(payload, JWT_SECRET);
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
 };
 
 // Función auxiliar para formatear datos del usuario
@@ -67,7 +70,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Crear nuevo usuario
+    // Crear nuevo usuario (el modelo se encarga de hashear la contraseña)
     const newUser = await User.create({
       username,
       email,
@@ -119,8 +122,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // Logs para depuración
+    console.log('Email recibido:', email);
+    console.log('Password recibido:', password);
+    console.log('Password en BD:', user.password);
+
     // Verificar contraseña
-    const isPasswordValid = await user.comparePassword(password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('Resultado bcrypt.compare:', isPasswordValid);
     if (!isPasswordValid) {
       res.status(401).json({
         success: false,
