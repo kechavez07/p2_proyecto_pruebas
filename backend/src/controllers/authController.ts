@@ -77,13 +77,9 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       password
     });
 
-    // Generar token
-    const token = generateToken(newUser.id, newUser.username, newUser.email);
-
-    const response: AuthResponse = {
+    const response = {
       success: true,
       message: 'Usuario registrado exitosamente',
-      token,
       user: formatUserResponse(newUser)
     };
 
