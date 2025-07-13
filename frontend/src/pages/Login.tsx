@@ -7,32 +7,62 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email || !password) {
-      toast({
-        title: "Error",
-        description: "Por favor completa todos los campos",
-        variant: "destructive"
-      });
-      return;
-    }
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!email || !password) {
+    toast({
+      title: "Error",
+      description: "Por favor completa todos los campos",
+      variant: "destructive"
+    });
+    return;
+  }
 
-    // Simular login exitoso
+  try {
+    const url = isSignUp
+      ? "http://localhost:5000/api/auth/register"    // Cambia por tu endpoint de registro
+      : "http://localhost:5000/api/auth/login";      // Cambia por tu endpoint de login
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: isSignUp
+        ? JSON.stringify({ username, email, password, confirmPassword })
+        : JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+  // Busca el mensaje en diferentes campos
+  const errorMsg = data.message || data.msg || data.error || JSON.stringify(data) || "Error";
+  throw new Error(errorMsg);
+}
+
     toast({
       title: "¡Bienvenido!",
       description: isSignUp ? "Cuenta creada exitosamente" : "Inicio de sesión exitoso"
     });
-    
+
+    // Aquí puedes guardar el token si tu backend lo devuelve
+    // localStorage.setItem("token", data.token);
+
     navigate("/home");
-  };
+  } catch (error: any) {
+    toast({
+      title: "Error",
+      description: error.message,
+      variant: "destructive"
+    });
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/20 flex items-center justify-center p-4">
@@ -62,6 +92,19 @@ const Login = () => {
           
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nombre de usuario</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    placeholder="Tu nombre de usuario"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Correo electrónico</Label>
                 <Input
@@ -85,6 +128,19 @@ const Login = () => {
                   className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirmar contraseña</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="transition-all duration-200 focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+              )}
 
               <Button 
                 type="submit" 
