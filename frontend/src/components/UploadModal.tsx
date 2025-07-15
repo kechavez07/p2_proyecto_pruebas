@@ -18,6 +18,8 @@ const UploadModal = () => {
   const [description, setDescription] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -25,6 +27,15 @@ const UploadModal = () => {
       setSelectedFile(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
+    }
+  };
+
+  const handleAvatarSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      const url = URL.createObjectURL(file);
+      setAvatarPreview(url);
     }
   };
 
@@ -37,6 +48,14 @@ const UploadModal = () => {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("image", selectedFile);
+    if (avatarFile) {
+      formData.append("avatar", avatarFile);
+    }
+    // Obtener el nombre de usuario del localStorage
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (user?.username) {
+      formData.append("authorName", user.username);
+    }
 
     try {
       const res = await fetch("http://localhost:5000/api/pins/createPin", {
@@ -66,6 +85,11 @@ const UploadModal = () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
       setPreviewUrl(null);
+    }
+    setAvatarFile(null);
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview);
+      setAvatarPreview(null);
     }
   };
 
@@ -133,6 +157,57 @@ const UploadModal = () => {
                   accept="image/*"
                   className="hidden"
                   onChange={handleFileSelect}
+                />
+              </div>
+
+              {/* Avatar Upload */}
+              <Label className="mt-4 block">Avatar del autor</Label>
+              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center hover:border-primary/50 transition-colors">
+                {avatarPreview ? (
+                  <div className="relative">
+                    <img 
+                      src={avatarPreview} 
+                      alt="Avatar Preview" 
+                      className="w-24 h-24 rounded-full mx-auto object-cover"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        setAvatarFile(null);
+                        if (avatarPreview) {
+                          URL.revokeObjectURL(avatarPreview);
+                          setAvatarPreview(null);
+                        }
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <Upload className="h-12 w-12 mx-auto text-muted-foreground" />
+                    <div>
+                      <Label
+                        htmlFor="avatar-upload"
+                        className="cursor-pointer text-primary hover:text-primary/80"
+                      >
+                        Selecciona un avatar
+                      </Label>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        O arrastra y suelta aquí
+                      </p>
+                    </div>
+                  </div>
+                )}
+                <Input
+                  id="avatar-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarSelect}
                 />
               </div>
             </div>
