@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
+  const [userPins, setUserPins] = useState<any[]>([]);
+  const [savedPins, setSavedPins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -32,6 +34,16 @@ const Profile = () => {
             followingCount: data.user.followingCount || 0,
             pinsCount: data.user.pinsCount || 0
           });
+          // Obtener los pines creados por el usuario
+          fetch(`http://localhost:5000/api/pins/getPinsByUser/${data.user.username}`)
+            .then(res => res.json())
+            .then(pins => setUserPins(pins))
+            .catch(() => setUserPins([]));
+          // Obtener los pines guardados por el usuario
+          fetch(`http://localhost:5000/api/pins/getSavedPinsByUser/${data.user.id}`)
+            .then(res => res.json())
+            .then(pins => setSavedPins(pins))
+            .catch(() => setSavedPins([]));
         } else {
           setError("No se pudo obtener el perfil");
         }
@@ -51,7 +63,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <UserProfile user={user} isOwnProfile={true} />
+        <UserProfile user={user} isOwnProfile={true} userPins={userPins} savedPins={savedPins} />
       </main>
     </div>
   );

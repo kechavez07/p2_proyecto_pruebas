@@ -1,3 +1,51 @@
+import SavedPin from '../models/SavedPin';
+// Guardar un pin como favorito
+export const savePin = async (req: Request, res: Response) => {
+  try {
+    const { userId, pinId } = req.body;
+    if (!userId || !pinId) {
+      return res.status(400).json({ message: 'userId y pinId son requeridos' });
+    }
+    // Evitar duplicados
+    const exists = await SavedPin.findOne({ where: { userId, pinId } });
+    if (exists) {
+      return res.status(200).json({ message: 'Ya está guardado' });
+    }
+    await SavedPin.create({ userId, pinId });
+    return res.status(201).json({ message: 'Pin guardado' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al guardar el pin', error });
+  }
+};
+
+// Consultar pines guardados por usuario
+export const getSavedPinsByUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    if (!userId) {
+      return res.status(400).json({ message: 'userId es requerido' });
+    }
+    const saved = await SavedPin.findAll({ where: { userId } });
+    const pinIds = saved.map((s: any) => s.pinId);
+    const pins = await Pin.findAll({ where: { id: pinIds } });
+    return res.status(200).json(pins);
+  } catch (error) {
+    return res.status(500).json({ message: 'Error al obtener pines guardados', error });
+  }
+};
+export const getPinsByUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { authorName } = req.params;
+    if (!authorName) {
+      res.status(400).json({ message: 'authorName es requerido' });
+      return;
+    }
+    const pins = await Pin.findAll({ where: { authorName } });
+    res.status(200).json(pins);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener los pines del usuario', error });
+  }
+}
 import { Request, Response } from 'express';
 import Pin from '../models/Pin';
 import cloudinary from '../config/cloudinary';

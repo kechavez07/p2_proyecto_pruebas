@@ -2,7 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary';
-import { createPin, getPins } from '../controllers/pinController';
+import { createPin, getPins, getPinsByUser, savePin, getSavedPinsByUser } from '../controllers/pinController';
 
 const router = Router();
 
@@ -49,5 +49,15 @@ router.post('/pins', upload.fields([
 
 // Obtener todos los pines
 router.get('/pins', getPins);
+
+// Obtener pines por usuario
+router.get('/getPinsByUser/:authorName', getPinsByUser);
+
+// Guardar un pin como favorito
+router.post('/savePin', savePin);
+
+// Obtener pines guardados por usuario
+router.get('/getSavedPinsByUser/:userId', getSavedPinsByUser);
+
 
 export default router;

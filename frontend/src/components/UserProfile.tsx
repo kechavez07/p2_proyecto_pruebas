@@ -17,36 +17,12 @@ interface UserProfileProps {
     pinsCount: number;
   };
   isOwnProfile?: boolean;
+  userPins?: any[];
+  savedPins?: any[];
 }
 
-const UserProfile = ({ user, isOwnProfile = false }: UserProfileProps) => {
+const UserProfile = ({ user, isOwnProfile = false, userPins = [], savedPins = [] }: UserProfileProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
-
-  // Mock user pins
-  const userPins = [
-    {
-      id: "1",
-      imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=600&fit=crop",
-      title: "Diseño UI moderno",
-      author: { name: user.name, avatar: user.avatar }
-    },
-    {
-      id: "2",
-      imageUrl: "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=500&fit=crop",
-      title: "Paisaje inspirador",
-      author: { name: user.name, avatar: user.avatar }
-    }
-  ];
-
-  const savedPins = [
-    {
-      id: "3",
-      imageUrl: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e?w=400&h=700&fit=crop",
-      title: "Comida saludable",
-      author: { name: "Otro Usuario", avatar: "" },
-      saved: true
-    }
-  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -125,21 +101,48 @@ const UserProfile = ({ user, isOwnProfile = false }: UserProfileProps) => {
         
         <TabsContent value="created">
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-            {userPins.map((pin) => (
-              <div key={pin.id} className="break-inside-avoid mb-4">
-                <PinCard {...pin} />
-              </div>
-            ))}
+            {userPins.length === 0 ? (
+              <div className="text-center col-span-full text-muted-foreground py-8">No tienes pines creados.</div>
+            ) : (
+              userPins.map((pin) => {
+                // Adaptar estructura para PinCard
+                const pinProps = {
+                  ...pin,
+                  author: {
+                    name: pin.authorName || user.name,
+                    avatar: pin.authorAvatar || user.avatar
+                  }
+                };
+                return (
+                  <div key={pin.id} className="break-inside-avoid mb-4">
+                    <PinCard {...pinProps} />
+                  </div>
+                );
+              })
+            )}
           </div>
         </TabsContent>
         
         <TabsContent value="saved">
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-            {savedPins.map((pin) => (
-              <div key={pin.id} className="break-inside-avoid mb-4">
-                <PinCard {...pin} />
-              </div>
-            ))}
+            {savedPins.length === 0 ? (
+              <div className="text-center col-span-full text-muted-foreground py-8">No tienes pines guardados.</div>
+            ) : (
+              savedPins.map((pin) => {
+                const pinProps = {
+                  ...pin,
+                  author: {
+                    name: pin.authorName || user.name,
+                    avatar: pin.authorAvatar || user.avatar
+                  }
+                };
+                return (
+                  <div key={pin.id} className="break-inside-avoid mb-4">
+                    <PinCard {...pinProps} />
+                  </div>
+                );
+              })
+            )}
           </div>
         </TabsContent>
       </Tabs>

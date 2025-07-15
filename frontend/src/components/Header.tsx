@@ -2,14 +2,21 @@ import { Search, Bell, MessageCircle, User, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b">
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/home" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
             <span className="text-white font-bold text-lg">P</span>
           </div>
@@ -21,7 +28,7 @@ const Header = () => {
         {/* Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           <Button variant="ghost" className="font-medium" asChild>
-            <Link to="/">Inicio</Link>
+            <Link to="/home">Inicio</Link>
           </Button>
           <Button variant="ghost" className="font-medium" asChild>
             <Link to="/profile">Perfil</Link>
@@ -58,6 +65,9 @@ const Header = () => {
               </AvatarFallback>
             </Avatar>
           </Link>
+          <Button variant="outline" onClick={handleLogout} className="ml-2">
+            Salir
+          </Button>
         </div>
       </div>
     </header>

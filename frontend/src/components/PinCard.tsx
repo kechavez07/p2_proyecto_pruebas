@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart, Share2, MoreHorizontal, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,8 +21,21 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
   const [isSaved, setIsSaved] = useState(saved);
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
+  const handleSave = async () => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    if (!user.id) return;
+    try {
+      const res = await fetch("http://localhost:5000/api/pins/savePin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.id, pinId: id })
+      });
+      if (res.ok) {
+        setIsSaved(true);
+      }
+    } catch (err) {
+      // Puedes mostrar un toast de error si lo deseas
+    }
   };
 
   return (
@@ -47,6 +60,7 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
           <div className="absolute inset-0 bg-black/20 flex items-start justify-end p-3">
             <Button
               onClick={handleSave}
+              disabled={isSaved}
               className={cn(
                 "bg-accent hover:bg-accent/90 text-accent-foreground",
                 isSaved && "bg-primary hover:bg-primary/90 text-primary-foreground"
