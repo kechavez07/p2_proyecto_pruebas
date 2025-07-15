@@ -28,19 +28,34 @@ const UploadModal = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedFile || !title) return;
 
-    // Here you would upload the file and create the pin
-    console.log("Creating pin:", { title, description, file: selectedFile });
-    
-    // Reset form
-    setTitle("");
-    setDescription("");
-    setSelectedFile(null);
-    setPreviewUrl(null);
-    setIsOpen(false);
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("image", selectedFile);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/pins/createPin", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        // Opcional: recargar pines o mostrar mensaje de éxito
+        setTitle("");
+        setDescription("");
+        setSelectedFile(null);
+        setPreviewUrl(null);
+        setIsOpen(false);
+      } else {
+        alert("Error al crear el pin");
+      }
+    } catch (err) {
+      alert("Error de red al crear el pin");
+    }
   };
 
   const handleClose = () => {
@@ -148,6 +163,8 @@ const UploadModal = () => {
               </div>
             </div>
           </div>
+
+
 
           {/* Actions */}
           <div className="flex justify-end space-x-3">

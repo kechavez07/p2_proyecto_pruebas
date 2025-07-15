@@ -51,8 +51,13 @@ const Login = () => {
       description: isSignUp ? "Cuenta creada exitosamente" : "Inicio de sesión exitoso"
     });
 
-    // Aquí puedes guardar el token si tu backend lo devuelve
-    // localStorage.setItem("token", data.token);
+    // Guarda el token y el usuario en localStorage si el backend lo devuelve
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+    }
+    if (data.user) {
+      localStorage.setItem("user", JSON.stringify(data.user));
+    }
 
     navigate("/home");
   } catch (error: any) {

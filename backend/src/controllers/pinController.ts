@@ -9,8 +9,8 @@ export const createPin = async (req: Request, res: Response) => {
     const imageFile = files?.image?.[0];
     const avatarFile = files?.avatar?.[0];
 
-    if (!imageFile || !avatarFile) {
-      return res.status(400).json({ message: 'Imagen y avatar requeridos' });
+    if (!imageFile || !avatarFile || !title || !description || !authorName) {
+      return res.status(400).json({ message: 'Todos los campos son requeridos: imagen, avatar, título, descripción y nombre de autor.' });
     }
 
     // Subir imagen principal a Cloudinary
@@ -41,10 +41,10 @@ export const createPin = async (req: Request, res: Response) => {
   }
 };
 
-export const getPins = async (_req: Request, res: Response) => {
+export const getPins = async (req: Request, res: Response): Promise<void> => {
   try {
     const pins = await Pin.findAll();
-    res.json(pins);
+    res.status(200).json(pins);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener los pines', error });
   }

@@ -35,6 +35,10 @@ router.post('/createPin', (req, res) => {
   });
 });
 
+//Ruta para obtener todos los pines
+router.get('/getPins', getPins);
+
+
 const upload = multer({ storage });
 
 // Subida de imagen y avatar para los pines
