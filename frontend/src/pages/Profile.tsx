@@ -1,22 +1,23 @@
-import Header from "@/components/Header";
-import UserProfile from "@/components/UserProfile";
-import { useEffect, useState } from "react";
+import React from 'react';
+import Header from '@/components/Header';
+import UserProfile from '@/components/UserProfile';
+import { useEffect, useState } from 'react';
 
 const Profile = () => {
   const [user, setUser] = useState<any>(null);
   const [userPins, setUserPins] = useState<any[]>([]);
   const [savedPins, setSavedPins] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     if (!token) {
-      setError("No hay sesión activa");
+      setError('No hay sesión activa');
       setLoading(false);
       return;
     }
-    fetch("http://localhost:5000/api/auth/profile", {
+    fetch('http://localhost:5000/api/auth/profile', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -37,7 +38,7 @@ const Profile = () => {
           // Obtener los pines creados por el usuario
           fetch(`http://localhost:5000/api/pins/getPinsByUser/${data.user.username}`)
             .then(res => res.json())
-            .then(pins => setUserPins(pins))
+            .then(pins => setUserPins(Array.isArray(pins) ? pins : pins.pins || []))
             .catch(() => setUserPins([]));
           // Obtener los pines guardados por el usuario
           fetch(`http://localhost:5000/api/pins/getSavedPinsByUser/${data.user.id}`)
@@ -45,12 +46,12 @@ const Profile = () => {
             .then(pins => setSavedPins(pins))
             .catch(() => setSavedPins([]));
         } else {
-          setError("No se pudo obtener el perfil");
+          setError('No se pudo obtener el perfil');
         }
         setLoading(false);
       })
       .catch(() => {
-        setError("Error al obtener el perfil");
+        setError('Error al obtener el perfil');
         setLoading(false);
       });
   }, []);
@@ -63,8 +64,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <UserProfile user={user} isOwnProfile={true} userPins={userPins} savedPins={savedPins} />
-      </main>
+<UserProfile user={user} isOwnProfile={true} userPins={{ total: userPins.length, pins: userPins }} savedPins={savedPins} />      </main>
     </div>
   );
 };

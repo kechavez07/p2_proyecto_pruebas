@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 5000;
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
 });
 
@@ -46,11 +46,20 @@ app.use('*', (req, res) => {
   res.status(404).json({ message: 'Ruta no encontrada' });
 });
 
-// Iniciar la conexión a la base y luego el servidor
-(async () => {
-  await connectDB();
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
-    console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
-  });
-})();
+// Iniciar la conexión a la base y luego el servidor solo si no es test
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+      console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'desarrollo'}`);
+    });
+  })();
+} else {
+  // En test, solo conecta la base (sin levantar el servidor)
+  (async () => {
+    await connectDB();
+  })();
+}
+
+export default app;

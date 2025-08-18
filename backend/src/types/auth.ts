@@ -5,7 +5,7 @@ export interface AuthRequest extends Request {
     id: number;
     username: string;
     email: string;
-  };
+  }
 }
 
 export interface RegisterRequest {

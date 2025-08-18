@@ -1,9 +1,10 @@
-import { useState } from "react";
-import { Settings, Share2, MoreHorizontal, Grid3X3, Bookmark } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import PinCard from "./PinCard";
+import { useState } from 'react';
+import { Settings, Share2, MoreHorizontal, Grid3X3, Bookmark } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import PinCard from './PinCard';
+import React from 'react';
 
 interface UserProfileProps {
   user: {
@@ -17,12 +18,11 @@ interface UserProfileProps {
     pinsCount: number;
   };
   isOwnProfile?: boolean;
-  userPins?: any[];
+  userPins?: { total: number; pins: any[] };
   savedPins?: any[];
 }
 
-const UserProfile = ({ user, isOwnProfile = false, userPins = [], savedPins = [] }: UserProfileProps) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+const UserProfile = ({ user, isOwnProfile = false, userPins = { total: 0, pins: [] }, savedPins = [] }: UserProfileProps) => {  const [isFollowing, setIsFollowing] = useState(false);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -74,9 +74,9 @@ const UserProfile = ({ user, isOwnProfile = false, userPins = [], savedPins = []
             <>
               <Button 
                 onClick={() => setIsFollowing(!isFollowing)}
-                className={isFollowing ? "bg-secondary hover:bg-secondary/80 text-secondary-foreground" : "bg-gradient-primary text-white hover:opacity-90"}
+                className={isFollowing ? 'bg-secondary hover:bg-secondary/80 text-secondary-foreground' : 'bg-gradient-primary text-white hover:opacity-90'}
               >
-                {isFollowing ? "Siguiendo" : "Seguir"}
+                {isFollowing ? 'Siguiendo' : 'Seguir'}
               </Button>
               <Button variant="outline" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
@@ -101,10 +101,10 @@ const UserProfile = ({ user, isOwnProfile = false, userPins = [], savedPins = []
         
         <TabsContent value="created">
           <div className="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
-            {userPins.length === 0 ? (
+            {(!Array.isArray(userPins.pins) || userPins.pins.length === 0) ? (
               <div className="text-center col-span-full text-muted-foreground py-8">No tienes pines creados.</div>
             ) : (
-              userPins.map((pin) => {
+              userPins.pins.map((pin) => {
                 // Adaptar estructura para PinCard
                 const pinProps = {
                   ...pin,

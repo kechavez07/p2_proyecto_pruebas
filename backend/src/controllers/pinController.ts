@@ -41,11 +41,10 @@ export const getPinsByUser = async (req: Request, res: Response): Promise<void> 
       return;
     }
     const pins = await Pin.findAll({ where: { authorName } });
-    res.status(200).json(pins);
-  } catch (error) {
+res.status(200).json({ total: pins.length, pins });  } catch (error) {
     res.status(500).json({ message: 'Error al obtener los pines del usuario', error });
   }
-}
+};
 import { Request, Response } from 'express';
 import Pin from '../models/Pin';
 import cloudinary from '../config/cloudinary';

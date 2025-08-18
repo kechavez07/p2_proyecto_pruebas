@@ -13,12 +13,17 @@ const sequelize = process.env.DATABASE_URL
           rejectUnauthorized: false
         } : false,
         connectTimeout: 60000,
+        charset: 'utf8mb4',
       },
       pool: {
         max: 5,
         min: 0,
         acquire: 30000,
         idle: 10000,
+      },
+      define: {
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_unicode_ci',
       },
       logging: process.env.NODE_ENV === 'development' ? console.log : false,
       retry: {
@@ -56,6 +61,7 @@ const sequelize = process.env.DATABASE_URL
           rejectUnauthorized: false
         } : false,
         connectTimeout: 60000,
+        charset: 'utf8mb4',
       },
       pool: {
         max: 5,

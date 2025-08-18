@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import React from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -19,21 +20,21 @@ const Login = () => {
   e.preventDefault();
   if (!email || !password) {
     toast({
-      title: "Error",
-      description: "Por favor completa todos los campos",
-      variant: "destructive"
+      title: 'Error',
+      description: 'Por favor completa todos los campos',
+      variant: 'destructive'
     });
     return;
   }
 
   try {
     const url = isSignUp
-      ? "http://localhost:5000/api/auth/register"    // Cambia por tu endpoint de registro
-      : "http://localhost:5000/api/auth/login";      // Cambia por tu endpoint de login
+      ? 'http://localhost:5000/api/auth/register'    // Cambia por tu endpoint de registro
+      : 'http://localhost:5000/api/auth/login';      // Cambia por tu endpoint de login
 
     const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: isSignUp
         ? JSON.stringify({ username, email, password, confirmPassword })
         : JSON.stringify({ email, password }),
@@ -42,29 +43,29 @@ const Login = () => {
 
     if (!response.ok) {
   // Busca el mensaje en diferentes campos
-  const errorMsg = data.message || data.msg || data.error || JSON.stringify(data) || "Error";
+  const errorMsg = data.message || data.msg || data.error || JSON.stringify(data) || 'Error';
   throw new Error(errorMsg);
 }
 
     toast({
-      title: "¡Bienvenido!",
-      description: isSignUp ? "Cuenta creada exitosamente" : "Inicio de sesión exitoso"
+      title: '¡Bienvenido!',
+      description: isSignUp ? 'Cuenta creada exitosamente' : 'Inicio de sesión exitoso'
     });
 
     // Guarda el token y el usuario en localStorage si el backend lo devuelve
     if (data.token) {
-      localStorage.setItem("token", data.token);
+      localStorage.setItem('token', data.token);
     }
     if (data.user) {
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem('user', JSON.stringify(data.user));
     }
 
-    navigate("/home");
+    navigate('/home');
   } catch (error: any) {
     toast({
-      title: "Error",
+      title: 'Error',
       description: error.message,
-      variant: "destructive"
+      variant: 'destructive'
     });
   }
 };
@@ -85,12 +86,12 @@ const Login = () => {
         <Card className="backdrop-blur-sm bg-card/80 border-border/50 shadow-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">
-              {isSignUp ? "Crear cuenta" : "Iniciar sesión"}
+              {isSignUp ? 'Crear cuenta' : 'Iniciar sesión'}
             </CardTitle>
             <CardDescription>
               {isSignUp 
-                ? "Únete a nuestra comunidad creativa"
-                : "Accede a tu cuenta para continuar"
+                ? 'Únete a nuestra comunidad creativa'
+                : 'Accede a tu cuenta para continuar'
               }
             </CardDescription>
           </CardHeader>
@@ -151,20 +152,20 @@ const Login = () => {
                 type="submit" 
                 className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-semibold py-2.5 transition-all duration-200 transform hover:scale-[1.02]"
               >
-                {isSignUp ? "Crear cuenta" : "Iniciar sesión"}
+                {isSignUp ? 'Crear cuenta' : 'Iniciar sesión'}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-muted-foreground">
-                {isSignUp ? "¿Ya tienes una cuenta?" : "¿No tienes una cuenta?"}
+                {isSignUp ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}
               </p>
               <Button
                 variant="link"
                 onClick={() => setIsSignUp(!isSignUp)}
                 className="text-primary hover:text-accent transition-colors duration-200 font-medium"
               >
-                {isSignUp ? "Iniciar sesión" : "Crear cuenta"}
+                {isSignUp ? 'Iniciar sesión' : 'Crear cuenta'}
               </Button>
             </div>
           </CardContent>
