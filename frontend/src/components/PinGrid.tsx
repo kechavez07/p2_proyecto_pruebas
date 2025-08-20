@@ -1,10 +1,11 @@
-import PinCard from "./PinCard";
-import { useEffect, useState } from "react";
+import PinCard from './PinCard';
+import { useEffect, useState } from 'react';
+import React from 'react';
 
 const PinGrid = () => {
   const [pins, setPins] = useState<any[]>([]);
   useEffect(() => {
-    fetch("http://localhost:5000/api/pins/getPins")
+    fetch('http://localhost:5000/api/pins/getPins')
       .then((res) => res.json())
       .then((data) => setPins(data));
   }, []);

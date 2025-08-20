@@ -73,14 +73,6 @@ User.init(
       allowNull: true,
       defaultValue: ''
     },
-    bio: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-      defaultValue: '',
-      validate: {
-        len: [0, 500]
-      }
-    }
   },
   {
     sequelize,

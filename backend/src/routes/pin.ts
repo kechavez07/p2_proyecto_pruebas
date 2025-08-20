@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request } from 'express';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../config/cloudinary';
@@ -8,7 +8,7 @@ const router = Router();
 
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: (req, file) => {
+  params: (req: Request, file: Express.Multer.File) => {
     let folder = 'pins/others';
     if (file.fieldname === 'image') folder = 'pins/images';
     if (file.fieldname === 'avatar') folder = 'pins/avatars';
@@ -31,7 +31,7 @@ router.post('/createPin', (req, res) => {
     if (err) {
       return res.status(500).json({ message: 'Error al subir archivos', error: err });
     }
-    createPin(req, res);
+    return createPin(req, res);
   });
 });
 

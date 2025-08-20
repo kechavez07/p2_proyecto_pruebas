@@ -1,21 +1,22 @@
-import { useState } from "react";
-import { Upload, X, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { useState } from 'react';
+import { Upload, X, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
+import React from 'react';
 
 const UploadModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -45,42 +46,42 @@ const UploadModal = () => {
     if (!selectedFile || !title) return;
 
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("image", selectedFile);
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('image', selectedFile);
     if (avatarFile) {
-      formData.append("avatar", avatarFile);
+      formData.append('avatar', avatarFile);
     }
     // Obtener el nombre de usuario del localStorage
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (user?.username) {
-      formData.append("authorName", user.username);
+      formData.append('authorName', user.username);
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/pins/createPin", {
-        method: "POST",
+      const res = await fetch('http://localhost:5000/api/pins/createPin', {
+        method: 'POST',
         body: formData,
       });
       if (res.ok) {
         // Opcional: recargar pines o mostrar mensaje de éxito
-        setTitle("");
-        setDescription("");
+        setTitle('');
+        setDescription('');
         setSelectedFile(null);
         setPreviewUrl(null);
         setIsOpen(false);
       } else {
-        alert("Error al crear el pin");
+        alert('Error al crear el pin');
       }
     } catch (err) {
-      alert("Error de red al crear el pin");
+      alert('Error de red al crear el pin');
     }
   };
 
   const handleClose = () => {
     setIsOpen(false);
-    setTitle("");
-    setDescription("");
+    setTitle('');
+    setDescription('');
     setSelectedFile(null);
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);

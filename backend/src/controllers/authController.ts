@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 import jwt, { Secret } from 'jsonwebtoken';
 import { Request, Response } from 'express';
@@ -7,7 +6,7 @@ import { Op } from 'sequelize';
 import { User } from '../models/User';
 import { AuthResponse, RegisterRequest, LoginRequest } from '../types/auth';
 
-const JWT_SECRET: Secret = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET ?? 'your-secret-key';
 const JWT_EXPIRES_IN: string = typeof process.env.JWT_EXPIRES_IN === 'string' && process.env.JWT_EXPIRES_IN.length > 0 ? process.env.JWT_EXPIRES_IN : '7d';
 
 
@@ -23,7 +22,6 @@ const formatUserResponse = (user: any) => ({
   username: user.username,
   email: user.email,
   avatar: user.avatar || '',
-  bio: user.bio || '',
   createdAt: user.createdAt
 });
 

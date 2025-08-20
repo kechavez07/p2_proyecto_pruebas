@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
-import { Heart, Share2, MoreHorizontal, Bookmark } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { useState, useEffect } from 'react';
+import { Heart, Share2, MoreHorizontal, Bookmark } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import React from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 interface PinCardProps {
   id: string;
@@ -22,12 +23,12 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
   const [isHovered, setIsHovered] = useState(false);
 
   const handleSave = async () => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.id) return;
     try {
-      const res = await fetch("http://localhost:5000/api/pins/savePin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:5000/api/pins/savePin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, pinId: id })
       });
       if (res.ok) {
@@ -41,7 +42,7 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
   return (
     <div 
       className={cn(
-        "group relative bg-card rounded-xl overflow-hidden shadow-pin hover:shadow-hover transition-all duration-300 cursor-pointer",
+        'group relative bg-card rounded-xl overflow-hidden shadow-pin hover:shadow-hover transition-all duration-300 cursor-pointer',
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -62,12 +63,12 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
               onClick={handleSave}
               disabled={isSaved}
               className={cn(
-                "bg-accent hover:bg-accent/90 text-accent-foreground",
-                isSaved && "bg-primary hover:bg-primary/90 text-primary-foreground"
+                'bg-accent hover:bg-accent/90 text-accent-foreground',
+                isSaved && 'bg-primary hover:bg-primary/90 text-primary-foreground'
               )}
             >
-              <Bookmark className={cn("h-4 w-4 mr-2", isSaved && "fill-current")} />
-              {isSaved ? "Guardado" : "Guardar"}
+              <Bookmark className={cn('h-4 w-4 mr-2', isSaved && 'fill-current')} />
+              {isSaved ? 'Guardado' : 'Guardar'}
             </Button>
           </div>
         )}
