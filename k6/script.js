@@ -27,7 +27,7 @@ export const options = {
 // Registra un usuario único y obtiene su token de autenticación.
 // Si algún paso falla aquí, la prueba se detiene por completo.
 export function setup() {
-  const apiUrl = __ENV.API_URL || 'http://localhost:5000';
+  const apiUrl = __ENV.API_URL || 'https://proyecto-pruebas-api.onrender.com';
   
   // Genera credenciales únicas para cada ejecución de la prueba
   const uniqueSuffix = Date.now();
