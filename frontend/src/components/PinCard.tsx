@@ -26,7 +26,7 @@ const PinCard = ({ id, imageUrl, title, description, author, saved = false, clas
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user.id) return;
     try {
-      const res = await fetch('http://localhost:5000/api/pins/savePin', {
+      const res = await fetch('https://proyecto-pruebas-api.onrender.com/api/pins/savePin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, pinId: id })

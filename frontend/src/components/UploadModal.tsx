@@ -59,7 +59,7 @@ const UploadModal = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/pins/createPin', {
+      const res = await fetch('https://proyecto-pruebas-api.onrender.com/api/pins/createPin', {
         method: 'POST',
         body: formData,
       });
