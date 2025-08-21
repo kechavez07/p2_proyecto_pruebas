@@ -1,8 +1,13 @@
 // src/setupTests.ts
 import '@testing-library/jest-dom'
-import 'whatwg-fetch' // fetch en JSDOM
+import 'whatwg-fetch'
+import { vi } from 'vitest'
 
-// matchMedia (algunos componentes lo usan)
+// Shim de compatibilidad para librerías que esperan "jest"
+;(globalThis as any).jest = vi
+
+// matchMedia (algun
+// os componentes lo usan)
 if (!('matchMedia' in window)) {
   // @ts-ignore
   window.matchMedia = (query: string) => ({
