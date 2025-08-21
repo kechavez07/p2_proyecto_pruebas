@@ -9,9 +9,28 @@ on:
       - main
 
 jobs:
-  # Job para pruebas del Backend
+  # Job para pruebas del Backend (CORREGIDO)
   test-backend:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    env:
+      DB_HOST: 127.0.0.1
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: testdb
+      DB_PORT: 3306
     defaults:
       run:
         working-directory: ./backend
@@ -22,15 +41,24 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Usa la versión de Node que necesites
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..10}; do
+            if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"; break;
+            fi;
+            echo "Waiting for MySQL..."; sleep 5;
+          done
+
       - name: Run backend tests
         run: npm test
 
-  # Job para pruebas del Frontend
+  # Job para pruebas del Frontend (sin cambios)
   test-frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -53,34 +81,16 @@ jobs:
       
       - name: Check build
         run: npm run build
-
-  # Job para pruebas de carga con k6 (placeholder)
-  # Asegúrate de tener tus scripts de k6 en una carpeta, por ejemplo 'k6/'
-  performance-test-k6:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      
-      # Asumiendo que tienes un archivo k6/script.js
-      - name: Run k6 local test
-        uses: grafana/k6-action@v0.3.1
-        with:
-          filename: k6/script.js # Cambia esta ruta a tu script de k6
   
-  # Job de Despliegue
+  # Job de Despliegue (sin k6, como lo tenías)
   deploy:
     runs-on: ubuntu-latest
-    # Este job necesita que los 3 anteriores hayan pasado con éxito
     needs: [test-backend, test-frontend]
-    # Se ejecuta solo en la rama main (doble confirmación) y si los jobs previos fueron exitosos
     if: github.ref == 'refs/heads/main' && success()
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Desplegar Frontend a Vercel
       - name: Deploy Frontend to Vercel
         uses: amondnet/vercel-action@v25
         with:
@@ -88,9 +98,8 @@ jobs:
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           working-directory: ./frontend
-          vercel-args: '--prod' # Indica que es un despliegue a producción
+          vercel-args: '--prod'
 
-      # Desplegar Backend a Render
       - name: Deploy Backend to Render
         run: |
           curl -X POST \
@@ -104,6 +113,3 @@ jobs:
         run: |
           echo "✅ Frontend desplegado en Vercel."
           echo "✅ Despliegue del Backend iniciado en Render."
-          echo "Visita el dashboard de Render para ver el progreso."
-          # La URL de Render es estática, la puedes obtener de tu dashboard.
-          # La URL de Vercel se genera automáticamente.
