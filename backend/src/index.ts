@@ -45,6 +45,8 @@ if (process.env.NODE_ENV !== 'test npm run dev') {
     windowMs: 15 * 60 * 1000, // 15 minutos
     max: 500, // Límite de 500 peticiones por IP
     message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.',
+    // Omite el límite si la petición contiene el header 'x-k6-test' con el valor secreto.
+    skip: (req) => req.headers['x-k6-test'] === process.env.K6_SECRET,
     standardHeaders: true, // Usa cabeceras estándar `RateLimit-*`
     legacyHeaders: false, // Deshabilita las cabeceras `X-RateLimit-*`
   });
