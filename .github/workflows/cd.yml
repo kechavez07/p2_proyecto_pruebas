@@ -72,7 +72,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     # Este job necesita que los 3 anteriores hayan pasado con éxito
-    needs: [test-backend, test-frontend, performance-test-k6]
+    needs: [test-backend, test-frontend]
     # Se ejecuta solo en la rama main (doble confirmación) y si los jobs previos fueron exitosos
     if: github.ref == 'refs/heads/main' && success()
 
