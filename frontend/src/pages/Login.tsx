@@ -29,8 +29,8 @@ const Login = () => {
 
   try {
     const url = isSignUp
-      ? 'http://localhost:5000/api/auth/register'    // Cambia por tu endpoint de registro
-      : 'http://localhost:5000/api/auth/login';      // Cambia por tu endpoint de login
+      ? 'https://proyecto-pruebas-api.onrender.com/api/auth/register'    // Cambia por tu endpoint de registro
+      : 'https://proyecto-pruebas-api.onrender.com/api/auth/login';      // Cambia por tu endpoint de login
 
     const response = await fetch(url, {
       method: 'POST',

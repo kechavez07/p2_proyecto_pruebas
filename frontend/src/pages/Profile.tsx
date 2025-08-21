@@ -17,7 +17,7 @@ const Profile = () => {
       setLoading(false);
       return;
     }
-    fetch('http://localhost:5000/api/auth/profile', {
+    fetch('https://proyecto-pruebas-api.onrender.com/api/auth/profile', {
       headers: {
         Authorization: `Bearer ${token}`
       }

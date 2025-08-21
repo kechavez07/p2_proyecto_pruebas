@@ -1,0 +1,109 @@
+# .github/workflows/cd.yml
+
+name: Continuous Deployment
+
+# Se activa solo en pushes a la rama main
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Job para pruebas del Backend
+  test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Usa la versión de Node que necesites
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run backend tests
+        run: npm test
+
+  # Job para pruebas del Frontend
+  test-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run frontend tests
+        run: npm test
+      
+      - name: Check build
+        run: npm run build
+
+  # Job para pruebas de carga con k6 (placeholder)
+  # Asegúrate de tener tus scripts de k6 en una carpeta, por ejemplo 'k6/'
+  performance-test-k6:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      # Asumiendo que tienes un archivo k6/script.js
+      - name: Run k6 local test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          filename: k6/script.js # Cambia esta ruta a tu script de k6
+  
+  # Job de Despliegue
+  deploy:
+    runs-on: ubuntu-latest
+    # Este job necesita que los 3 anteriores hayan pasado con éxito
+    needs: [test-backend, test-frontend, performance-test-k6]
+    # Se ejecuta solo en la rama main (doble confirmación) y si los jobs previos fueron exitosos
+    if: github.ref == 'refs/heads/main' && success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Desplegar Frontend a Vercel
+      - name: Deploy Frontend to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./frontend
+          vercel-args: '--prod' # Indica que es un despliegue a producción
+
+      # Desplegar Backend a Render
+      - name: Deploy Backend to Render
+        run: |
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+            -d '{"clearCache": "do_not_clear"}'
+      
+      - name: Log Deployment URLs
+        run: |
+          echo "✅ Frontend desplegado en Vercel."
+          echo "✅ Despliegue del Backend iniciado en Render."
+          echo "Visita el dashboard de Render para ver el progreso."
+          # La URL de Render es estática, la puedes obtener de tu dashboard.
+          # La URL de Vercel se genera automáticamente.
