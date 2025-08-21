@@ -6,6 +6,13 @@ import { vi } from 'vitest'
 // Shim de compatibilidad para librerías que esperan "jest"
 ;(globalThis as any).jest = vi
 
+;(globalThis as any).ResizeObserver ??= class {
+  observe = vi.fn(); unobserve = vi.fn(); disconnect = vi.fn()
+}
+// DOMRect (para algunos layouts)
+;(globalThis as any).DOMRect ??= {
+  fromRect: (r: any) => r,
+} as any
 // matchMedia (algun
 // os componentes lo usan)
 if (!('matchMedia' in window)) {
