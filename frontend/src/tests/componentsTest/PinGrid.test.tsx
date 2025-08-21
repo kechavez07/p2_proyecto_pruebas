@@ -78,7 +78,7 @@ describe("PinGrid Component", () => {
 
     render(<PinGrid />);
     await waitFor(() => {
-      expect(mockFetch).toHaveBeenCalledWith("http://localhost:5000/api/pins/getPins");
+      expect(mockFetch).toHaveBeenCalledWith("https://proyecto-pruebas-api.onrender.com/api/pins/getPins");
     });
   });
 });
