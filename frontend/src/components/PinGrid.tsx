@@ -5,7 +5,7 @@ import React from 'react';
 const PinGrid = () => {
   const [pins, setPins] = useState<any[]>([]);
   useEffect(() => {
-    fetch('http://localhost:5000/api/pins/getPins')
+    fetch('https://proyecto-pruebas-api.onrender.com/api/pins/getPins')
       .then((res) => res.json())
       .then((data) => setPins(data));
   }, []);
