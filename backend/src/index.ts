@@ -16,45 +16,50 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // --- MEJORA DE CORS ---
-// Lista de URLs permitidas. Agregamos las más comunes para desarrollo y producción.
 const allowedOrigins = [
   'http://localhost:5173', // URL común de Vite en desarrollo
   'http://localhost:3000', // URL común de Create React App
   'https://p2-proyecto-pruebas.vercel.app' // URL de tu frontend en producción
 ];
 
-// Si tienes una URL específica en tus variables de entorno, la añadimos también.
 if (process.env.FRONTEND_URL) {
   allowedOrigins.push(process.env.FRONTEND_URL);
 }
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    // Permite peticiones si el origen está en la lista blanca o si no tienen origen (ej: Postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // Permite que el frontend envíe cookies o headers de autorización
+  credentials: true,
 };
 
+// --- Middlewares ---
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 500,
-  message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
-});
+// Aplica el Rate Limiter SOLO si no estamos en entorno de pruebas
+if (process.env.NODE_ENV !== 'test npm run dev') {
+  const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 500, // Límite de 500 peticiones por IP
+    message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.',
+    standardHeaders: true, // Usa cabeceras estándar `RateLimit-*`
+    legacyHeaders: false, // Deshabilita las cabeceras `X-RateLimit-*`
+  });
+  app.use(limiter);
+  console.log('✅ Rate limiter está activado.');
+} else {
+  console.log('ℹ️ Rate limiter está DESACTIVADO para el entorno de pruebas.');
+}
 
-// Middlewares
-app.use(limiter);
 app.use(helmet());
-app.use(cors(corsOptions)); // <-- Usamos la nueva configuración mejorada
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas de la API
+// --- Rutas de la API ---
 app.use('/api/auth', authRoutes);
 app.use('/api/pins', pinRoutes);
 
@@ -63,7 +68,7 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Servidor funcionando correctamente', timestamp: new Date().toISOString() });
 });
 
-// Middleware para servir archivos estáticos (si tienes subida de imágenes)
+// Middleware para servir archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Middleware para manejar rutas no encontradas (404)
@@ -74,7 +79,7 @@ app.use('*', (req, res) => {
 // Middleware centralizado para manejo de errores
 app.use(errorHandler);
 
-// Iniciar la conexión a la base de datos y el servidor
+// --- Iniciar la conexión a la base de datos y el servidor ---
 if (process.env.NODE_ENV !== 'test') {
   (async () => {
     try {
