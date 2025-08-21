@@ -36,7 +36,7 @@ const Profile = () => {
             pinsCount: data.user.pinsCount || 0
           });
           // Obtener los pines creados por el usuario
-          fetch(`http://localhost:5000/api/pins/getPinsByUser/${data.user.username}`)
+          fetch(`https://proyecto-pruebas-api.onrender.com/api/pins/getPinsByUser/${data.user.username}`)
             .then(res => res.json())
             .then(pins => setUserPins(Array.isArray(pins) ? pins : pins.pins || []))
             .catch(() => setUserPins([]));
