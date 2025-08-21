@@ -91,7 +91,7 @@ describe("PinCard Component", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://localhost:5000/api/pins/savePin",
+        "https://proyecto-pruebas-api.onrender.com/api/pins/savePin",
         expect.objectContaining({
           method: "POST",
           headers: expect.objectContaining({ "Content-Type": "application/json" }),

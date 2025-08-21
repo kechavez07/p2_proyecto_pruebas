@@ -108,7 +108,7 @@ describe("UploadModal Component", () => {
 
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
-        "http://localhost:5000/api/pins/createPin",
+        "https://proyecto-pruebas-api.onrender.com/api/pins/createPin",
         expect.objectContaining({
           method: "POST",
           body: expect.any(FormData),
